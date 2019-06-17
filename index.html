@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Words Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      *{
+        margin:0;
+      }
+      #form{
+        display: block;
+        position:fixed;
+        bottom: 0%;
+        width: 100%;
+        height: 7%;
+        max-height: 7%;
+        background-color:darkgoldenrod;
+      }
+      #word{
+        max-width: 70%;
+        width: 70%;
+      }
+      #game_chat{
+        display:block;
+        position:fixed;
+        margin: 0% 0% 30% 0%;
+        max-height:95%;
+        height:95%;
+        width: 100%;
+        overflow:auto;
+        max-height: 90%;
+        background-color: coral;
+      }
+      #title{
+        display:block;
+        position: relative;
+        align-self: center;
+        background-color: chocolate;
+      }
+    </style>
+    </head>
+    <body>
+      <div>
+        <strong id='title'>Игра в слова -- Города</strong>
+        <form id = 'form'>
+          <strong>Введите слово когда будет ваша очередь</strong>
+          <input id='word' type="text"/>
+          <input type="button" onclick="send()" value='Отправить'/>
+        </form>
+        <div id='game_chat' position='relative'>Добро пожаловать!</div>
+      </div>
+      
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
+
+        var socket = new WebSocket("ws://localhost:8080");
+        var id = parseInt(Math.random(1)*1000000);
+
+        socket.onopen = function(event) {
+          socket.send('id=>'+id+'|action=>open|');
+          console.log("Соединение установлено.");
+        };
+ 
+        socket.onclose = function(event) {
+          if (event.wasClean) {
+        console.log('Соединение закрыто чисто');
+          } else {
+        console.log('Обрыв соединения'); // например, "убит" процесс сервера
+          }
+          alert('Код: ' + event.code + ' причина: ' + event.reason);
+        };
+ 
+        socket.onmessage = function(event) {
+          console.log("Получены данные " + event.data);
+          if(event.data[0]== '#')
+          {
+            id = parseInt(Math.random(1)*1000000);
+            socket.send('id=>'+id+'|action=>open|');
+          }
+          else
+            {
+            var div = document.getElementById("game_chat");
+            var content = document.createElement('br');
+            div.appendChild(content);
+            var content = document.createTextNode(event.data);
+            div.appendChild(content);
+          }
+        };
+ 
+        socket.onerror = function(error) {
+          console.log("Ошибка " + error.message);
+        };   
+        function send(){
+          var word  = document.getElementById('word').value;
+          console.log(word);
+          socket.send('id=>'+id+'|action=>input|'+word);
+        }    
+
+        $(document).ready(function () {
+          $(window).on('beforeunload', function() {
+            document.write('<div>.....................</div>');  // HTML код в одну строчку!!!
+            close();
+            return "Вы точно решили покинуть наш сайт?";
+            });
+      
+            $('a').click(function() { 
+            $(window).off('beforeunload');
+          });
+        });
+        function close(){
+          setTimeout(function(){socket.send('id=>'+id+'|action=>close|');},400);
+          return null;
+        }
+    </script>
+    </body>
+</html>
