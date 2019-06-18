@@ -21,7 +21,7 @@ class UsedWords{
         $lastWord = -1;
     }
     public function getLastWord(){
-        if($this->lastWord !== -1)
+        if($this->lastWord != -1)
         {
             return $this->arr[$this->lastWord];
         }

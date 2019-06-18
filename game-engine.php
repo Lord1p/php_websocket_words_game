@@ -65,13 +65,13 @@ class Game{
                     $len = iconv_strlen($lowlw,'UTF-8');
                     $letter1 = iconv_substr($lowlw,$len + $index,1);
                     $letter2 = iconv_substr($lowword,0,1);
-                    if($letter1 === $letter2)
+                    if($letter1 == $letter2)
                     {
                         return $this->findInDict($word);
                     }
                     else
                     {
-                        return "${word} --Прошлое слово заканчивается на другую букву 1${letter1} 2${letter2} |${lowlw}|${len}| ${index} ${lowword}";
+                        return "${word} --Прошлое слово заканчивается на букву ${letter1} а не ${letter2} ";
                     }
                 }
                 else
